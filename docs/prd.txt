@@ -1,0 +1,745 @@
+# Product Requirements Document (PRD)
+# Momentchen Swift - iOS/macOS Notion Integration App
+
+Version: 1.0
+Datum: 22. Oktober 2025
+Status: Draft
+Autor: Product Manager - BMad Method Framework
+
+================================================================================
+1. PROJEKTÜBERSICHT
+================================================================================
+
+1.1 Projektname
+---------------
+Momentchen Swift
+
+1.2 Beschreibung
+---------------
+Momentchen Swift ist eine native iOS/macOS Applikation zur Erfassung und Verwaltung
+von persönlichen Momenten, die direkt mit einer Notion-Workspace synchronisiert
+werden. Die App ermöglicht es Nutzern, ihre Erlebnisse, Gedanken und Aktivitäten
+zu kategorisieren und mit Projekten sowie Lebensbereichen zu verknüpfen.
+
+1.3 Zielplattformen
+------------------
+- Primary: iOS 17.0+
+- Secondary: macOS 14.0+ (mit bedingter UI-Anpassung)
+
+1.4 Technologie-Stack
+--------------------
+- UI Framework: SwiftUI
+- Datenpersistenz: SwiftData (lokale Konfiguration)
+- API Integration: URLSession mit async/await
+- Architektur: MVVM (Model-View-ViewModel)
+- Notion SDK: Native REST API Integration via URLSession
+
+1.5 Projekt-Scope
+-----------------
+Dies ist eine vollständige Neuimplementierung der ursprünglichen Momentchen-App
+(Tauri + React + TypeScript) als native Swift-Anwendung mit 100% funktionaler
+Parität zum Original.
+
+================================================================================
+2. ZIELE & NICHT-ZIELE
+================================================================================
+
+2.1 Primäre Ziele
+----------------
+1. Nahtlose Notion API Integration mit Token-basierter Authentifizierung
+2. Echtzeit-Synchronisation von Momenten mit Notion-Datenbanken
+3. Intuitive Moment-Erfassung mit vollständiger Metadaten-Unterstützung
+4. Plattformübergreifende Konsistenz (iOS + macOS)
+5. Schnelle Performance (<2s API-Latenz)
+
+2.2 Sekundäre Ziele
+------------------
+1. Persistente Theme-Verwaltung (Light/Dark/System)
+2. Automatische Zeit-Konvertierung (UTC ↔ Lokalzeit)
+3. Benutzerfreundlicher Setup-Flow für Erstkonfiguration
+4. Live-Aktualisierung der Heute-Ansicht (15s Intervall)
+
+2.3 Nicht-Ziele (Out of Scope für V1)
+-------------------------------------
+1. Push-Benachrichtigungen für neue Momente
+2. Offline-Modus mit lokaler Datenpersistenz und Sync-Queue
+3. Tauri Stronghold Security-Equivalent
+4. Vollständige macOS-spezifische UI-Optimierung
+5. Mehrsprachigkeit (nur Deutsch für V1)
+6. Export-Funktionalität (PDF, CSV)
+7. Erweiterte Statistiken und Analytics
+8. Kollaborative Features (Sharing, Comments)
+
+================================================================================
+3. USER STORIES MIT ACCEPTANCE CRITERIA
+================================================================================
+
+US-1: Notion Token Authentifizierung
+-------------------------------------
+Als User möchte ich meinen Notion Integration Token eingeben können, damit die
+App Zugriff auf meine Notion-Workspace erhält.
+
+Acceptance Criteria:
+- AC1.1: Setup-Screen zeigt Token-Eingabefeld mit Passwort-Maskierung
+- AC1.2: "Validieren"-Button triggert users.me API-Call
+- AC1.3: Bei erfolgreicher Validierung (Status 200) wird Token in SwiftData gespeichert
+- AC1.4: Bei Fehler (401 Unauthorized) wird Fehlermeldung "Ungültiger Token" angezeigt
+- AC1.5: Token-Eingabefeld unterstützt Copy-Paste
+- AC1.6: Setup-Flow navigiert automatisch zu Datenbank-Auswahl bei Erfolg
+
+US-2: Datenbank-Auswahl
+-----------------------
+Als User möchte ich meine drei Notion-Datenbanken (Momente, Projekte, Lebensbereiche)
+auswählen können, damit die App die korrekten Daten synchronisiert.
+
+Acceptance Criteria:
+- AC2.1: App ruft alle verfügbaren Datenbanken via search endpoint ab (type=database)
+- AC2.2: Drei separate Dropdown-Selektoren für: Momente-DB, Projekte-DB, Lebensbereiche-DB
+- AC2.3: Datenbank-Namen werden alphabetisch sortiert angezeigt
+- AC2.4: "Speichern"-Button ist nur aktiv, wenn alle 3 DBs ausgewählt sind
+- AC2.5: Ausgewählte Database IDs werden in SwiftData persistiert
+- AC2.6: Nach Speicherung navigiert App zur Hauptansicht
+- AC2.7: Bei API-Fehler wird Retry-Mechanismus mit max. 3 Versuchen ausgeführt
+
+US-3: Neuen Moment erfassen
+---------------------------
+Als User möchte ich einen neuen Moment mit allen relevanten Details erfassen,
+damit ich meine Erlebnisse strukturiert in Notion dokumentieren kann.
+
+Acceptance Criteria:
+- AC3.1: Formular enthält Pflichtfeld "Beschreibung" (TextField)
+- AC3.2: Typ-Auswahl zeigt alle verfügbaren Select-Optionen aus Momente-DB
+- AC3.3: Zeitpunkt-Picker mit Standard = aktuelle Zeit (lokale Zeitzone)
+- AC3.4: Optionale Projekt-Auswahl (Dropdown mit "In Bearbeitung"-Projekten)
+- AC3.5: Optionale Lebensbereich-Auswahl (Dropdown mit "Aktiv"-Bereichen)
+- AC3.6: "Speichern"-Button erstellt neuen Notion Page-Eintrag via pages.create
+- AC3.7: Zeitstempel wird von Lokalzeit zu UTC konvertiert vor API-Call
+- AC3.8: Success-Feedback zeigt Toast "Moment gespeichert"
+- AC3.9: Bei Fehler zeigt Alert mit spezifischer Fehlermeldung
+- AC3.10: Formular resettet nach erfolgreichem Speichern
+- AC3.11: Zurück-Navigation ohne Speichern zeigt Bestätigungs-Dialog bei geänderten Daten
+
+US-4: Heutige Momente anzeigen
+------------------------------
+Als User möchte ich eine Liste aller heutigen Momente sehen, damit ich einen
+Überblick über meinen aktuellen Tag habe.
+
+Acceptance Criteria:
+- AC4.1: Liste zeigt alle Momente mit Zeitpunkt = heute (UTC-basierter Filter)
+- AC4.2: Momente sind chronologisch sortiert (neueste zuerst)
+- AC4.3: Jeder Listen-Eintrag zeigt: Beschreibung, Typ (mit Farbe), Zeitstempel (Lokalzeit)
+- AC4.4: Kategorie-Icons (Projekt/Lebensbereich) werden angezeigt, falls vorhanden
+- AC4.5: Auto-Refresh alle 15 Sekunden via databases.query
+- AC4.6: Pull-to-Refresh für manuelles Aktualisieren
+- AC4.7: Empty State zeigt "Keine Momente für heute" mit CTA "Moment erfassen"
+- AC4.8: Loading Indicator während API-Call
+- AC4.9: Zeitstempel werden von UTC zu Lokalzeit konvertiert
+- AC4.10: Bei API-Fehler bleibt letzte erfolgreiche Daten-Version sichtbar + Error-Banner
+
+US-5: Moment bearbeiten
+-----------------------
+Als User möchte ich bestehende Momente bearbeiten können, damit ich Korrekturen
+oder Ergänzungen vornehmen kann.
+
+Acceptance Criteria:
+- AC5.1: Tap auf Listen-Eintrag öffnet Detail-Ansicht im View-Mode
+- AC5.2: Edit-Icon in Navigation Bar aktiviert Edit-Mode
+- AC5.3: Formular zeigt alle vorausgefüllten Daten (Beschreibung, Typ, Zeit, Kategorien)
+- AC5.4: Änderungen werden via pages.update API-Call gespeichert
+- AC5.5: Success-Feedback + Navigation zurück zur Liste
+- AC5.6: "Abbrechen"-Button verwirft Änderungen und kehrt zu View-Mode zurück
+- AC5.7: Dirty-State Detection zeigt Bestätigungs-Dialog bei ungespeicherten Änderungen
+- AC5.8: Zeitstempel-Änderungen werden korrekt UTC-konvertiert
+
+US-6: Theme-Verwaltung
+----------------------
+Als User möchte ich zwischen Light Mode, Dark Mode und System-Einstellung wechseln
+können, damit die App meinen Präferenzen entspricht.
+
+Acceptance Criteria:
+- AC6.1: Settings-Screen zeigt Segmented Control mit 3 Optionen: Light / Dark / System
+- AC6.2: Auswahl wird sofort visuell angewendet
+- AC6.3: Theme-Präferenz wird in UserDefaults persistiert
+- AC6.4: Bei App-Start wird gespeicherte Präferenz geladen
+- AC6.5: "System"-Option synchronisiert mit iOS/macOS System-Einstellung
+- AC6.6: Theme-Wechsel animiert smooth (keine Flashes)
+
+US-7: Setup-Flow Reset
+----------------------
+Als User möchte ich den Setup-Flow erneut durchlaufen können, damit ich Token
+oder Datenbanken ändern kann.
+
+Acceptance Criteria:
+- AC7.1: Settings-Screen zeigt "Setup zurücksetzen"-Button
+- AC7.2: Bestätigungs-Dialog warnt vor Datenverlust
+- AC7.3: Bei Bestätigung werden Token + Database IDs aus SwiftData gelöscht
+- AC7.4: App navigiert automatisch zu Setup-Screen (Token-Eingabe)
+- AC7.5: Keine lokalen Moment-Daten werden gelöscht (nur Config)
+
+================================================================================
+4. FUNKTIONALE REQUIREMENTS
+================================================================================
+
+4.1 Notion API Integration
+--------------------------
+REQ-API-001: Die App MUSS Notion REST API v1 verwenden
+REQ-API-002: Authentifizierung MUSS via Bearer Token erfolgen
+REQ-API-003: Folgende Endpoints MÜSSEN unterstützt werden:
+  - POST /v1/users/me (Token-Validierung)
+  - POST /v1/search (Datenbank-Suche)
+  - POST /v1/databases/{id}/query (Moment-Abfrage)
+  - POST /v1/pages (Moment-Erstellung)
+  - PATCH /v1/pages/{id} (Moment-Update)
+REQ-API-004: API-Calls MÜSSEN mit async/await implementiert werden
+REQ-API-005: Pagination MUSS mit 100 Items pro Page unterstützt werden
+REQ-API-006: Response-Parsing MUSS via Codable erfolgen
+
+4.2 Datenbank-Schema
+--------------------
+REQ-DB-001: Momente-Datenbank MUSS folgende Properties unterstützen:
+  - Name (title) → String
+  - Typ (select) → Enum mit Farbe
+  - Zeitpunkt (date) → ISO8601 String (UTC)
+  - Projekt (relation) → Optional Relation ID
+  - Lebensbereich (relation) → Optional Relation ID
+
+REQ-DB-002: Projekte-Datenbank MUSS unterstützen:
+  - Projekt (title) → String
+  - Status (status) → Filter "In Bearbeitung"
+
+REQ-DB-003: Lebensbereiche-Datenbank MUSS unterstützen:
+  - Thema (title) → String
+  - Status (status) → Filter "Aktiv"
+
+REQ-DB-004: Property-Namen MÜSSEN case-insensitive gemappt werden
+
+4.3 Lokale Datenpersistenz
+--------------------------
+REQ-LOCAL-001: SwiftData MUSS für folgende Daten verwendet werden:
+  - Notion Integration Token (verschlüsselt via Keychain)
+  - Momente Database ID
+  - Projekte Database ID
+  - Lebensbereiche Database ID
+  - Theme-Präferenz
+
+REQ-LOCAL-002: UserDefaults MUSS für nicht-sensitive Einstellungen verwendet werden:
+  - Theme-Auswahl (light/dark/system)
+  - Last Refresh Timestamp
+
+REQ-LOCAL-003: Keine Moment-Daten dürfen lokal persistiert werden (Single Source of Truth = Notion)
+
+4.4 Zeit-Verwaltung
+-------------------
+REQ-TIME-001: Alle Notion API-Calls MÜSSEN UTC-Zeitstempel verwenden
+REQ-TIME-002: UI-Anzeige MUSS Lokalzeit verwenden
+REQ-TIME-003: Konvertierung MUSS via DateFormatter mit .iso8601 erfolgen
+REQ-TIME-004: "Heute"-Filter MUSS auf UTC-Tagesgrenzen basieren
+REQ-TIME-005: Zeitstempel-Picker MUSS Lokalzeit mit Timezone-Indicator zeigen
+
+4.5 Error Handling
+------------------
+REQ-ERR-001: 401 Unauthorized MUSS zu Setup-Flow umleiten
+REQ-ERR-002: Netzwerk-Fehler MÜSSEN mit Retry-Mechanismus behandelt werden (max. 3x)
+REQ-ERR-003: API-Errors MÜSSEN user-freundliche Nachrichten zeigen:
+  - 400 Bad Request → "Ungültige Eingabe, bitte prüfen"
+  - 401 Unauthorized → "Token ungültig, bitte neu einloggen"
+  - 403 Forbidden → "Keine Berechtigung für diese Datenbank"
+  - 404 Not Found → "Datenbank nicht gefunden"
+  - 429 Rate Limit → "Zu viele Anfragen, bitte warten"
+  - 500 Server Error → "Notion Server-Fehler, bitte später versuchen"
+
+REQ-ERR-004: Alle Fehler MÜSSEN geloggt werden (OSLog)
+
+4.6 Performance
+---------------
+REQ-PERF-001: Heute-Ansicht MUSS in <2s laden (bei 50 Momenten)
+REQ-PERF-002: Moment-Erstellung MUSS in <1s Feedback geben
+REQ-PERF-003: Auto-Refresh DARF keine UI-Blockierung verursachen
+REQ-PERF-004: Datenbank-Suche MUSS mit Debouncing implementiert werden (500ms)
+
+================================================================================
+5. TECHNISCHE ANFORDERUNGEN
+================================================================================
+
+5.1 Architektur
+---------------
+TECH-001: MVVM Architektur mit folgenden Layern:
+  - Models: SwiftData Entities + Notion API Response Models
+  - ViewModels: @Observable Klassen für Business Logic
+  - Views: SwiftUI Views mit @State und @Binding
+
+TECH-002: Service Layer für API-Calls:
+  - NotionAPIService: URLSession Wrapper
+  - ConfigurationService: SwiftData CRUD
+  - DateService: UTC ↔ Local Conversion
+
+TECH-003: Repository Pattern für Datenbank-Abfragen:
+  - MomentRepository
+  - ProjectRepository
+  - LifeAreaRepository
+
+5.2 SwiftData Models
+--------------------
+TECH-004: AppConfiguration Model:
+  @Model
+  final class AppConfiguration {
+      var notionToken: String
+      var momentsDatabaseId: String
+      var projectsDatabaseId: String
+      var lifeAreasDatabaseId: String
+      var theme: ThemePreference
+      var lastSync: Date?
+  }
+
+TECH-005: Notion Response Models (Codable):
+  struct NotionPage: Codable { ... }
+  struct NotionDatabase: Codable { ... }
+  struct NotionUser: Codable { ... }
+
+5.3 API Service Implementation
+------------------------------
+TECH-006: NotionAPIService MUSS folgende Methoden implementieren:
+  - func validateToken() async throws -> NotionUser
+  - func searchDatabases() async throws -> [NotionDatabase]
+  - func queryMoments(databaseId: String, filter: Filter) async throws -> [NotionPage]
+  - func createMoment(properties: MomentProperties) async throws -> NotionPage
+  - func updateMoment(pageId: String, properties: MomentProperties) async throws
+
+TECH-007: Error Handling via Result Type:
+  enum NotionAPIError: Error {
+      case invalidToken
+      case networkError(Error)
+      case decodingError(Error)
+      case serverError(Int)
+  }
+
+5.4 UI Components
+-----------------
+TECH-008: Reusable SwiftUI Components:
+  - MomentRow: Listen-Eintrag mit Icon, Beschreibung, Zeit
+  - MomentForm: Erfassungs-/Bearbeitungs-Formular
+  - DatabasePicker: Dropdown für Datenbank-Auswahl
+  - ThemeToggle: Segmented Control für Theme
+  - LoadingOverlay: Full-Screen Loading Indicator
+  - ErrorBanner: Auto-dismissing Error-Anzeige
+
+TECH-009: Navigation Structure:
+  - SetupFlow: NavigationStack mit Token → Databases → Success
+  - MainApp: TabView mit Home, Settings
+  - MomentDetail: Sheet Presentation
+
+5.5 Platform-Spezifische Anpassungen
+------------------------------------
+TECH-010: iOS-spezifisch:
+  - Toolbar Items für Actions
+  - Sheet Presentation für Forms
+  - Pull-to-Refresh
+
+TECH-011: macOS-spezifisch (conditional compilation):
+  - Sidebar Navigation
+  - Window Title Anpassung
+  - Keyboard Shortcuts (⌘N für neuer Moment)
+
+================================================================================
+6. NOTION API SPEZIFIKATION
+================================================================================
+
+6.1 Authentifizierung
+---------------------
+Header: Authorization: Bearer {token}
+Notion-Version: 2022-06-28
+
+6.2 Endpoint Details
+--------------------
+
+6.2.1 Token Validierung
+POST https://api.notion.com/v1/users/me
+Response:
+{
+  "object": "user",
+  "id": "user-id",
+  "name": "Username",
+  "type": "person"
+}
+
+6.2.2 Datenbank-Suche
+POST https://api.notion.com/v1/search
+Body:
+{
+  "filter": { "property": "object", "value": "database" },
+  "page_size": 100
+}
+Response:
+{
+  "results": [
+    {
+      "object": "database",
+      "id": "db-id",
+      "title": [{ "text": { "content": "DB Name" } }]
+    }
+  ],
+  "has_more": false
+}
+
+6.2.3 Momente Abfragen (Heute)
+POST https://api.notion.com/v1/databases/{db-id}/query
+Body:
+{
+  "filter": {
+    "property": "Zeitpunkt",
+    "date": {
+      "equals": "2025-10-22"  // UTC-Datum
+    }
+  },
+  "sorts": [
+    { "property": "Zeitpunkt", "direction": "descending" }
+  ],
+  "page_size": 100
+}
+
+6.2.4 Moment erstellen
+POST https://api.notion.com/v1/pages
+Body:
+{
+  "parent": { "database_id": "{db-id}" },
+  "properties": {
+    "Name": {
+      "title": [{ "text": { "content": "Beschreibung" } }]
+    },
+    "Typ": {
+      "select": { "name": "Gedanke" }
+    },
+    "Zeitpunkt": {
+      "date": { "start": "2025-10-22T14:30:00Z" }
+    },
+    "Projekt": {
+      "relation": [{ "id": "project-page-id" }]
+    },
+    "Lebensbereich": {
+      "relation": [{ "id": "life-area-page-id" }]
+    }
+  }
+}
+
+6.2.5 Moment aktualisieren
+PATCH https://api.notion.com/v1/pages/{page-id}
+Body: Gleiche Struktur wie erstellen (nur geänderte Properties)
+
+6.3 Pagination
+--------------
+- Standard: 100 Items pro Page
+- has_more: Boolean für weitere Seiten
+- next_cursor: String für nächste Page
+- Implementierung: Rekursive Funktion bis has_more = false
+
+6.4 Rate Limits
+---------------
+- 3 Requests pro Sekunde (Average)
+- Implementierung: Exponential Backoff bei 429-Fehler
+
+================================================================================
+7. DATENMODELLE
+================================================================================
+
+7.1 Domain Models
+-----------------
+
+Moment:
+  - id: String (Notion Page ID)
+  - description: String
+  - type: MomentType (Enum)
+  - timestamp: Date
+  - project: Project? (Optional)
+  - lifeArea: LifeArea? (Optional)
+
+MomentType:
+  - Enum mit Cases: gedanke, erlebnis, aktivität, etc.
+  - Associated Value: color (Color)
+  - Initialisierung aus Notion Select-Option
+
+Project:
+  - id: String (Notion Page ID)
+  - name: String
+  - status: ProjectStatus
+
+LifeArea:
+  - id: String (Notion Page ID)
+  - name: String
+  - status: LifeAreaStatus
+
+7.2 API Response Models
+------------------------
+
+NotionPage:
+  - object: String = "page"
+  - id: String
+  - created_time: String (ISO8601)
+  - last_edited_time: String (ISO8601)
+  - properties: [String: NotionProperty]
+
+NotionProperty (Enum mit Associated Values):
+  - title([NotionRichText])
+  - select(NotionSelectOption)
+  - date(NotionDate)
+  - relation([NotionRelation])
+
+NotionDatabase:
+  - object: String = "database"
+  - id: String
+  - title: [NotionRichText]
+  - properties: [String: NotionPropertySchema]
+
+7.3 Configuration Model
+------------------------
+
+AppConfiguration (SwiftData):
+  - id: UUID
+  - notionToken: String (Keychain)
+  - momentsDatabaseId: String
+  - projectsDatabaseId: String
+  - lifeAreasDatabaseId: String
+  - themePreference: String (enum raw value)
+  - createdAt: Date
+  - updatedAt: Date
+
+================================================================================
+8. UI/UX ANFORDERUNGEN
+================================================================================
+
+8.1 Setup Flow
+--------------
+UX-001: Token-Eingabe Screen
+  - Titel: "Verbinde mit Notion"
+  - Untertitel: "Gib deinen Integration Token ein"
+  - Link: "Wie erstelle ich einen Token?" → Notion Docs
+  - SecureField mit "Token"-Placeholder
+  - Primary Button: "Validieren"
+  - Loading State während Validierung
+
+UX-002: Datenbank-Auswahl Screen
+  - Titel: "Wähle deine Datenbanken"
+  - 3 Sections: Momente, Projekte, Lebensbereiche
+  - Picker mit Suche (bei >10 DBs)
+  - Deaktivierte DBs ausgegraut mit Tooltip "Keine Berechtigung"
+  - Primary Button: "Speichern" (disabled bis alle 3 ausgewählt)
+
+UX-003: Success Screen
+  - Checkmark-Animation
+  - Text: "Setup abgeschlossen!"
+  - Auto-Navigation nach 2s zur Hauptansicht
+
+8.2 Hauptansicht
+----------------
+UX-004: Heute-Liste
+  - Navigation Title: "Heute - {Datum}"
+  - Trailing Button: "+" (neuer Moment)
+  - Liste mit Swipe-Aktionen: Bearbeiten, Löschen
+  - Pull-to-Refresh
+  - Auto-Refresh Indicator (subtil, top-right)
+  - Empty State: Illustration + "Noch keine Momente heute" + CTA
+
+UX-005: Moment-Row Design
+  - Leading: Typ-Icon mit Typ-Farbe als Background
+  - Title: Beschreibung (max. 2 Zeilen, truncated)
+  - Subtitle: Zeitstempel (HH:mm Format)
+  - Trailing: Kategorie-Badges (Projekt, Lebensbereich)
+  - Tap-Highlight: Subtle Background
+
+8.3 Moment-Formular
+-------------------
+UX-006: Erfassungs-/Bearbeitungs-Form
+  - Sheet Presentation (iOS) / Window (macOS)
+  - Titel: "Neuer Moment" / "Moment bearbeiten"
+  - Sections:
+    1. Beschreibung (TextEditor, 5 Zeilen, auto-expand)
+    2. Typ (Grid mit farbigen Buttons, 3 Spalten)
+    3. Zeitpunkt (DatePicker, wheel-style)
+    4. Kategorien (Expandable Section)
+       - Projekt (Picker)
+       - Lebensbereich (Picker)
+  - Footer: "Abbrechen" + "Speichern" (Primary)
+  - Keyboard Toolbar: "Fertig"-Button
+
+8.4 Settings
+------------
+UX-007: Einstellungen Screen
+  - Sections:
+    1. Darstellung
+       - Theme (Segmented Control: Light, Dark, System)
+    2. Notion-Verbindung
+       - Status: "Verbunden als {username}"
+       - Button: "Setup zurücksetzen" (Destructive)
+    3. Über
+       - Version
+       - Build Number
+  - Navigation Title: "Einstellungen"
+
+8.5 Design System
+-----------------
+UX-008: Farben
+  - Primary: .blue (iOS Standard)
+  - Success: .green
+  - Error: .red
+  - Warning: .orange
+  - Moment-Typen: Custom Colors aus Notion Select-Options
+
+UX-009: Typografie
+  - Titel: .title2 (Bold)
+  - Beschreibung: .body
+  - Zeitstempel: .caption
+  - Labels: .subheadline
+
+UX-010: Spacing
+  - Section Padding: 16pt
+  - Item Spacing: 12pt
+  - Form Field Spacing: 20pt
+
+8.6 Accessibility
+-----------------
+UX-011: VoiceOver-Unterstützung für alle interaktiven Elemente
+UX-012: Dynamic Type Support (alle Text-Größen)
+UX-013: Minimale Touch-Targets: 44x44pt
+UX-014: Kontrast-Verhältnis: min. 4.5:1 (Text)
+
+================================================================================
+9. SUCCESS METRICS
+================================================================================
+
+9.1 Funktionale Vollständigkeit
+-------------------------------
+METRIC-001: 100% der definierten User Stories implementiert
+METRIC-002: Alle 6 Notion API Endpoints funktional
+METRIC-003: Setup-Flow zu Moment-Erfassung in <2 Minuten durchlaufbar
+
+9.2 Performance
+---------------
+METRIC-004: Heute-Ansicht lädt in <2s (gemessen mit 50 Momenten)
+METRIC-005: Moment-Erstellung gibt Feedback in <1s
+METRIC-006: App-Start zu Hauptansicht in <3s (nach Setup)
+METRIC-007: Auto-Refresh hat <5% CPU-Last
+
+9.3 Zuverlässigkeit
+-------------------
+METRIC-008: API-Fehler-Rate <1% (bei stabiler Notion-Verbindung)
+METRIC-009: Crash-Rate <0.1% (pro Session)
+METRIC-010: Success-Rate für Moment-Erstellung >99%
+
+9.4 Benutzerfreundlichkeit
+--------------------------
+METRIC-011: Setup-Abschlussrate >95% (User, die Token eingeben)
+METRIC-012: Durchschnittliche Zeit für Moment-Erfassung <30s
+METRIC-013: Theme-Wechsel ohne visuelles Flackern
+
+9.5 Code-Qualität
+-----------------
+METRIC-014: Test-Coverage >80% (Unit + Integration)
+METRIC-015: Null SwiftLint-Warnungen (Standard Ruleset)
+METRIC-016: Alle API-Calls haben Error-Handling
+
+================================================================================
+10. IMPLEMENTIERUNGS-PHASEN
+================================================================================
+
+Phase 1: Foundation (Woche 1-2)
+--------------------------------
+- SwiftData Setup mit AppConfiguration Model
+- Notion API Service mit URLSession
+- Token-Validierung + Datenbank-Suche
+- Setup-Flow UI (Token + DB-Auswahl)
+
+Phase 2: Core Features (Woche 3-4)
+-----------------------------------
+- Moment Domain Models + Repositories
+- Heute-Ansicht mit databases.query
+- Moment-Erfassung (pages.create)
+- Zeit-Konvertierung (UTC ↔ Local)
+
+Phase 3: Advanced Features (Woche 5-6)
+--------------------------------------
+- Moment-Bearbeitung (pages.update)
+- Auto-Refresh Mechanismus
+- Projekt + Lebensbereich Relations
+- Theme-Verwaltung
+
+Phase 4: Polish (Woche 7-8)
+---------------------------
+- Error-Handling + User-Feedback
+- Loading States + Empty States
+- Accessibility-Optimierung
+- macOS-spezifische Anpassungen
+
+Phase 5: Testing & Launch (Woche 9-10)
+--------------------------------------
+- Unit Tests für Services
+- Integration Tests für API-Flows
+- UI Tests für kritische User Journeys
+- Performance-Optimierung
+- Beta-Testing
+
+================================================================================
+11. RISIKEN & MITIGATIONEN
+================================================================================
+
+RISIKO-001: Notion API Breaking Changes
+  Mitigation: Version-Pinning via Notion-Version Header, regelmäßige API-Docs Review
+
+RISIKO-002: Rate Limiting bei vielen Usern
+  Mitigation: Exponential Backoff, lokale Request-Queue, User-Feedback bei Delays
+
+RISIKO-003: SwiftData Migration-Probleme
+  Mitigation: Versionierung des Schemas, Migration-Tests, Fallback zu UserDefaults
+
+RISIKO-004: Zeitzone-Konvertierungs-Bugs
+  Mitigation: Umfassende Unit-Tests für DateService, UTC als Single Source of Truth
+
+RISIKO-005: Token-Sicherheit
+  Mitigation: Keychain-Storage, keine Logs mit Token, automatische Token-Invalidierung bei Jailbreak-Detection
+
+================================================================================
+12. OFFENE FRAGEN
+================================================================================
+
+FRAGE-001: Soll die App mehrere Notion-Accounts unterstützen? (Multi-Tenancy)
+  → V1: Nein, Single-Account nur
+
+FRAGE-002: Benötigen wir einen Onboarding-Flow mit Screenshots?
+  → V1: Nein, direkter Einstieg in Setup
+
+FRAGE-003: Sollen Momente lokal gecacht werden für Offline-Ansicht?
+  → V1: Nein, Online-Only
+
+FRAGE-004: Brauchen wir Widgets (iOS Home Screen / macOS Notification Center)?
+  → V1: Nein, zukünftige Feature-Idee
+
+FRAGE-005: Soll es eine Suche über alle Momente geben?
+  → V1: Nein, nur Heute-Ansicht
+
+================================================================================
+13. APPENDIX
+================================================================================
+
+13.1 Referenzen
+---------------
+- Notion API Dokumentation: https://developers.notion.com/reference/intro
+- SwiftData Guides: https://developer.apple.com/documentation/swiftdata
+- SwiftUI Human Interface Guidelines: https://developer.apple.com/design/human-interface-guidelines
+
+13.2 Glossar
+------------
+- Moment: Einzelner Eintrag in der Momente-Datenbank
+- Lebensbereich: Kategorisierung von Momenten nach Lebens-Themen
+- Projekt: Kategorisierung von Momenten nach aktiven Projekten
+- Setup-Flow: Initiale Konfiguration der App (Token + Datenbanken)
+- UTC: Coordinated Universal Time (Standard für API-Kommunikation)
+
+13.3 Change Log
+---------------
+Version 1.0 - 22.10.2025
+  - Initiales PRD erstellt
+  - User Stories definiert
+  - Technische Architektur spezifiziert
+  - Success Metrics festgelegt
+
+================================================================================
+Ende des Product Requirements Document
+================================================================================

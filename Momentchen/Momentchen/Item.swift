@@ -10,9 +10,15 @@ import SwiftData
 
 @Model
 final class Item {
+    @Attribute(.unique) var id: UUID
     var timestamp: Date
-    
+    var isStarred: Bool
+    var starredAt: Date?
+
     init(timestamp: Date) {
+        self.id = UUID()
         self.timestamp = timestamp
+        self.isStarred = false
+        self.starredAt = nil
     }
 }

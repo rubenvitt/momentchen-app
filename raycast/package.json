@@ -1,0 +1,60 @@
+{
+  "name": "momentchen",
+  "title": "Momentchen",
+  "description": "Capture and search your moments with Notion integration",
+  "icon": "icon.png",
+  "author": "rubeen",
+  "license": "MIT",
+  "version": "1.0.0",
+  "commands": [
+    {
+      "name": "create-moment",
+      "title": "Create Moment",
+      "description": "Create a new moment in your Notion database",
+      "mode": "view"
+    },
+    {
+      "name": "search-moments",
+      "title": "Search Moments",
+      "description": "Search and browse your moments",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "notionToken",
+      "type": "password",
+      "required": true,
+      "title": "Notion Integration Token",
+      "description": "Your Notion integration token (internal integration)",
+      "placeholder": "secret_..."
+    },
+    {
+      "name": "databaseId",
+      "type": "textfield",
+      "required": true,
+      "title": "Moments Database ID",
+      "description": "The ID of your Notion moments database",
+      "placeholder": "a418cfda28da4e9887f83df10a92d7f6"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.68.0",
+    "@raycast/utils": "^1.12.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.6",
+    "@types/node": "20.11.17",
+    "@types/react": "18.2.56",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "npx @raycast/api@latest publish"
+  }
+}

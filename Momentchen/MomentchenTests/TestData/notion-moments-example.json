@@ -1,0 +1,501 @@
+{
+  "object": "list",
+  "results": [
+    {
+      "object": "page",
+      "id": "00c2a1ca-29a7-4f61-ad36-a5929c8c7ab3",
+      "created_time": "2024-01-31T07:22:00.000Z",
+      "last_edited_time": "2024-03-10T20:30:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "248e059c-78fd-4776-a20f-0303b98c3b6d"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "248e059c-78fd-4776-a20f-0303b98c3b6d"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "database_id",
+        "database_id": "a418cfda-28da-4e98-87f8-3df10a92d7f6"
+      },
+      "archived": false,
+      "in_trash": false,
+      "is_locked": false,
+      "properties": {
+        "Experiment": {
+          "id": "B%3CIC",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "⭐ Jahresfavorit": {
+          "id": "FYK%5E",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "⭐ Tagesfavorit": {
+          "id": "MQK%3D",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Moment meines Lebens": {
+          "id": "SicX",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Relevantester Favorit": {
+          "id": "YxRO",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "05-tag"
+          }
+        },
+        "Projekt": {
+          "id": "%60%5E%3C%7D",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "Typ": {
+          "id": "aR%3DP",
+          "type": "select",
+          "select": {
+            "id": ":H}s",
+            "name": "learning",
+            "color": "blue"
+          }
+        },
+        "⭐ Wochenfavorit": {
+          "id": "c%60jL",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Zeitpunkt": {
+          "id": "fetH",
+          "type": "date",
+          "date": {
+            "start": "2024-01-31T08:22:00.000+01:00",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Lebensbereich": {
+          "id": "i_hR",
+          "type": "relation",
+          "relation": [
+            {
+              "id": "c2cacf83-6afb-4386-b88f-5ed18fc9d867"
+            }
+          ],
+          "has_more": false
+        },
+        "⭐ Monatsfavorit": {
+          "id": "um_x",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Insekten fliegen zum künstlichen Licht, weil sie mit dem Rücken Richtung Sonne fliegen. Sie kreisen damit also eher um Licht, als dass sie direkt dorthin fliegen.",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Insekten fliegen zum künstlichen Licht, weil sie mit dem Rücken Richtung Sonne fliegen. Sie kreisen damit also eher um Licht, als dass sie direkt dorthin fliegen.",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Insekten-fliegen-zum-k-nstlichen-Licht-weil-sie-mit-dem-R-cken-Richtung-Sonne-fliegen-Sie-kreisen--00c2a1ca29a74f61ad36a5929c8c7ab3",
+      "public_url": null
+    },
+    {
+      "object": "page",
+      "id": "027450ad-c0e5-48d8-9e29-60d85e9443d6",
+      "created_time": "2024-02-11T09:07:00.000Z",
+      "last_edited_time": "2024-02-12T16:18:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "7001356f-d123-42f7-b8ce-7fcb16c3673a"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "248e059c-78fd-4776-a20f-0303b98c3b6d"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "database_id",
+        "database_id": "a418cfda-28da-4e98-87f8-3df10a92d7f6"
+      },
+      "archived": false,
+      "in_trash": false,
+      "is_locked": false,
+      "properties": {
+        "Experiment": {
+          "id": "B%3CIC",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "⭐ Jahresfavorit": {
+          "id": "FYK%5E",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "⭐ Tagesfavorit": {
+          "id": "MQK%3D",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Moment meines Lebens": {
+          "id": "SicX",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Relevantester Favorit": {
+          "id": "YxRO",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "04-woche"
+          }
+        },
+        "Projekt": {
+          "id": "%60%5E%3C%7D",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "Typ": {
+          "id": "aR%3DP",
+          "type": "select",
+          "select": {
+            "id": "b~zU",
+            "name": "improvement",
+            "color": "yellow"
+          }
+        },
+        "⭐ Wochenfavorit": {
+          "id": "c%60jL",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Zeitpunkt": {
+          "id": "fetH",
+          "type": "date",
+          "date": {
+            "start": "2024-02-11T10:07:00.000+01:00",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Lebensbereich": {
+          "id": "i_hR",
+          "type": "relation",
+          "relation": [
+            {
+              "id": "6c12d6b5-45d3-4d25-b79e-714d8b552e65"
+            }
+          ],
+          "has_more": false
+        },
+        "⭐ Monatsfavorit": {
+          "id": "um_x",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Mit Zola einen längeren Morgenspaziergang gemacht",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Mit Zola einen längeren Morgenspaziergang gemacht",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Mit-Zola-einen-l-ngeren-Morgenspaziergang-gemacht-027450adc0e548d89e2960d85e9443d6",
+      "public_url": null
+    },
+    {
+      "object": "page",
+      "id": "0cea2b4a-37b2-44ad-abbc-b37205216637",
+      "created_time": "2024-09-08T09:40:00.000Z",
+      "last_edited_time": "2025-01-01T00:53:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "248e059c-78fd-4776-a20f-0303b98c3b6d"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "248e059c-78fd-4776-a20f-0303b98c3b6d"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "database_id",
+        "database_id": "a418cfda-28da-4e98-87f8-3df10a92d7f6"
+      },
+      "archived": false,
+      "in_trash": false,
+      "is_locked": false,
+      "properties": {
+        "Experiment": {
+          "id": "B%3CIC",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "⭐ Jahresfavorit": {
+          "id": "FYK%5E",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "⭐ Tagesfavorit": {
+          "id": "MQK%3D",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Moment meines Lebens": {
+          "id": "SicX",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Relevantester Favorit": {
+          "id": "YxRO",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": "01-leben"
+          }
+        },
+        "Projekt": {
+          "id": "%60%5E%3C%7D",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "Typ": {
+          "id": "aR%3DP",
+          "type": "select",
+          "select": {
+            "id": "IM^U",
+            "name": "feeling",
+            "color": "purple"
+          }
+        },
+        "⭐ Wochenfavorit": {
+          "id": "c%60jL",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Zeitpunkt": {
+          "id": "fetH",
+          "type": "date",
+          "date": {
+            "start": "2024-09-08T11:40:00.000+02:00",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Lebensbereich": {
+          "id": "i_hR",
+          "type": "relation",
+          "relation": [
+            {
+              "id": "5328bc94-9551-4c6a-8313-64b551f1eb8d"
+            }
+          ],
+          "has_more": false
+        },
+        "⭐ Monatsfavorit": {
+          "id": "um_x",
+          "type": "checkbox",
+          "checkbox": true
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Ich glaube, ich liebe Alisa noch übertrieben dolle",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Ich glaube, ich liebe Alisa noch übertrieben dolle",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Ich-glaube-ich-liebe-Alisa-noch-bertrieben-dolle-0cea2b4a37b244adabbcb37205216637",
+      "public_url": null
+    },
+    {
+      "object": "page",
+      "id": "00647d7d-7d96-43f4-869e-50b36b8888cb",
+      "created_time": "2024-01-19T07:35:00.000Z",
+      "last_edited_time": "2024-01-19T07:35:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "248e059c-78fd-4776-a20f-0303b98c3b6d"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "00000000-0000-0000-0000-000000000003"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "database_id",
+        "database_id": "a418cfda-28da-4e98-87f8-3df10a92d7f6"
+      },
+      "archived": false,
+      "in_trash": false,
+      "is_locked": false,
+      "properties": {
+        "Experiment": {
+          "id": "B%3CIC",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "⭐ Jahresfavorit": {
+          "id": "FYK%5E",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "⭐ Tagesfavorit": {
+          "id": "MQK%3D",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Moment meines Lebens": {
+          "id": "SicX",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Relevantester Favorit": {
+          "id": "YxRO",
+          "type": "formula",
+          "formula": {
+            "type": "string",
+            "string": ""
+          }
+        },
+        "Projekt": {
+          "id": "%60%5E%3C%7D",
+          "type": "relation",
+          "relation": [
+            {
+              "id": "8f65e65b-07f6-47d9-813b-dd0e08be71e5"
+            }
+          ],
+          "has_more": false
+        },
+        "Typ": {
+          "id": "aR%3DP",
+          "type": "select",
+          "select": {
+            "id": "sgjG",
+            "name": "miss",
+            "color": "red"
+          }
+        },
+        "⭐ Wochenfavorit": {
+          "id": "c%60jL",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Zeitpunkt": {
+          "id": "fetH",
+          "type": "date",
+          "date": {
+            "start": "2024-01-19T08:35:00.000+01:00",
+            "end": null,
+            "time_zone": null
+          }
+        },
+        "Lebensbereich": {
+          "id": "i_hR",
+          "type": "relation",
+          "relation": [],
+          "has_more": false
+        },
+        "⭐ Monatsfavorit": {
+          "id": "um_x",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Gestern Absage von Capgemini bekommen",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Gestern Absage von Capgemini bekommen",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Gestern-Absage-von-Capgemini-bekommen-00647d7d7d9643f4869e50b36b8888cb",
+      "public_url": null
+    }
+  ],
+  "next_cursor": null,
+  "has_more": false,
+  "type": "page_or_database",
+  "page_or_database": {}
+}

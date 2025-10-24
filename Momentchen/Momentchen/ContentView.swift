@@ -8,59 +8,89 @@
 import SwiftUI
 import SwiftData
 
+/// Root content view that determines whether to show setup or main app
+/// Checks for AppConfiguration to decide navigation flow
 struct ContentView: View {
+    // MARK: - Properties
+
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Query private var configurations: [AppConfiguration]
+
+    @State private var isCheckingConfig = true
+
+    private var hasConfiguration: Bool {
+        !configurations.isEmpty
+    }
+
+    // MARK: - Body
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
-                }
-                .onDelete(perform: deleteItems)
+        Group {
+            if isCheckingConfig {
+                loadingView
+            } else if hasConfiguration {
+                mainAppView
+            } else {
+                setupView
             }
-#if os(macOS)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-#endif
-            .toolbar {
-#if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-#endif
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-        } detail: {
-            Text("Select an item")
+        }
+        .task {
+            // Small delay to allow SwiftData to load
+            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+            isCheckingConfig = false
         }
     }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+    // MARK: - Subviews
+
+    private var loadingView: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+                .controlSize(.large)
+
+            Text("Momentchen")
+                .font(.title)
+                .fontWeight(.semibold)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
-        }
+    private var setupView: some View {
+        let apiService = NotionAPIService()
+        let viewModel = SetupViewModel(
+            apiService: apiService,
+            modelContext: modelContext
+        )
+
+        return SetupView(viewModel: viewModel)
+    }
+
+    private var mainAppView: some View {
+        let apiService = NotionAPIService()
+
+        return MainTabView(apiService: apiService)
+            .preferredColorScheme(configurations.first?.theme.colorScheme)
     }
 }
 
-#Preview {
+// MARK: - Previews
+
+#Preview("Setup Flow") {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: AppConfiguration.self, inMemory: true)
+}
+
+#Preview("Main App") {
+    let container = try! ModelContainer(
+        for: AppConfiguration.self,
+        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+    )
+
+    let context = ModelContext(container)
+    let config = AppConfiguration.mock()
+    context.insert(config)
+
+    return ContentView()
+        .modelContainer(container)
+        .environment(\.modelContext, context)
 }
