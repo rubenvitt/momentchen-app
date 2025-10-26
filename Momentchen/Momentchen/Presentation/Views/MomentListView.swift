@@ -17,6 +17,8 @@ struct MomentListView: View {
     @State private var showingNewMomentForm = false
     @State private var showingSettings = false
     @State private var selectedMoment: Moment?
+    @State private var prefilledDescription: String?
+    @State private var prefilledType: String?
 
     @Environment(\.modelContext) private var modelContext
 
@@ -64,10 +66,12 @@ struct MomentListView: View {
                         Button(action: { showingSettings = true }) {
                             Image(systemName: "gearshape")
                         }
+                        .keyboardShortcut(",", modifiers: .command)
 
                         Button(action: { showingNewMomentForm = true }) {
                             Image(systemName: "plus")
                         }
+                        .keyboardShortcut("n", modifiers: .command)
                     }
                 }
                 #else
@@ -83,10 +87,12 @@ struct MomentListView: View {
                         Button(action: { showingSettings = true }) {
                             Image(systemName: "gearshape")
                         }
+                        .keyboardShortcut(",", modifiers: .command)
 
                         Button(action: { showingNewMomentForm = true }) {
                             Image(systemName: "plus")
                         }
+                        .keyboardShortcut("n", modifiers: .command)
                     }
                 }
                 #endif
@@ -94,12 +100,33 @@ struct MomentListView: View {
             .refreshable {
                 await viewModel.loadTodaysMoments()
             }
+            #if os(iOS)
+            .onKeyPress(.space) {
+                showingNewMomentForm = true
+                return .handled
+            }
+            .onKeyPress("r", phases: .down) { _ in
+                Task {
+                    await viewModel.loadTodaysMoments()
+                }
+                return .handled
+            }
+            #endif
             .task {
                 await viewModel.loadTodaysMoments()
                 viewModel.startAutoRefresh()
             }
             .onDisappear {
                 viewModel.stopAutoRefresh()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("OpenMomentForm"))) { notification in
+                if let userInfo = notification.userInfo,
+                   let description = userInfo["description"] as? String,
+                   let type = userInfo["type"] as? String {
+                    prefilledDescription = description
+                    prefilledType = type
+                    showingNewMomentForm = true
+                }
             }
             .alert("Fehler", isPresented: .constant(viewModel.errorMessage != nil)) {
                 Button("OK") {
@@ -184,12 +211,27 @@ struct MomentListView: View {
             modelContext: modelContext
         )
 
+        // Pre-fill form data if available from shortcut/deep link
+        if let description = prefilledDescription {
+            formViewModel.title = description
+        }
+        if let typeName = prefilledType {
+            // Set the type after loading (will be applied in the view's task)
+            Task {
+                await formViewModel.loadAvailableOptions()
+                formViewModel.selectedType = formViewModel.momentTypes.first { $0.name == typeName }
+            }
+        }
+
         return MomentFormView(viewModel: formViewModel)
             .onDisappear {
                 // Refresh list after form dismissal
                 Task {
                     await viewModel.loadTodaysMoments()
                 }
+                // Clear prefilled data
+                prefilledDescription = nil
+                prefilledType = nil
             }
     }
 

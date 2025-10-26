@@ -331,7 +331,6 @@ final class ReviewModeViewModel {
     /// Format period label for display
     private func formatPeriodLabel(period: DateRange, timeframe: ReviewTimeframe) -> String {
         let calendar = Calendar.current
-        let now = Date()
 
         switch timeframe {
         case .daily:

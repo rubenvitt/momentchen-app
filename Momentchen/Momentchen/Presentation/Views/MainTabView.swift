@@ -14,6 +14,7 @@ struct MainTabView: View {
     // MARK: - Properties
 
     @Environment(\.modelContext) private var modelContext
+    @State private var selectedTab = 0
 
     private let apiService: NotionAPIService
 
@@ -26,18 +27,28 @@ struct MainTabView: View {
     // MARK: - Body
 
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             // Today's Moments Tab
             momentsTab
                 .tabItem {
                     Label("Momente", systemImage: "sparkles")
                 }
+                .tag(0)
+                .keyboardShortcut("1", modifiers: .command)
 
             // Review Mode Tab
             reviewTab
                 .tabItem {
                     Label("Reviews", systemImage: "star.circle.fill")
                 }
+                .tag(1)
+                .keyboardShortcut("2", modifiers: .command)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("OpenReviewMode"))) { _ in
+            selectedTab = 1
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ViewTodaysMoments"))) { _ in
+            selectedTab = 0
         }
     }
 

@@ -105,6 +105,7 @@ struct ReviewModeView: View {
                     .font(.title2)
                     .foregroundStyle(viewModel.canNavigateToPrevious ? .primary : .secondary)
             }
+            .keyboardShortcut(.leftArrow, modifiers: [])
             .disabled(!viewModel.canNavigateToPrevious)
 
             Spacer()
@@ -125,6 +126,7 @@ struct ReviewModeView: View {
                     .font(.title2)
                     .foregroundStyle(viewModel.canNavigateToNext ? .primary : .secondary)
             }
+            .keyboardShortcut(.rightArrow, modifiers: [])
             .disabled(!viewModel.canNavigateToNext)
         }
     }

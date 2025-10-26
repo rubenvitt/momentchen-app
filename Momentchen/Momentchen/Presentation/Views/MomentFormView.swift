@@ -80,6 +80,7 @@ struct MomentFormView: View {
                     Button("Abbrechen") {
                         dismiss()
                     }
+                    .keyboardShortcut(.escape)
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
@@ -269,6 +270,7 @@ struct MomentFormView: View {
                     .fontWeight(.semibold)
             }
         }
+        .keyboardShortcut(.return, modifiers: .command)
         .disabled(!isFormValid || viewModel.isLoading)
     }
 
