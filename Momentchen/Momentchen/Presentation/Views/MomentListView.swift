@@ -206,9 +206,19 @@ struct MomentListView: View {
     // MARK: - Sheet Content
 
     private var newMomentFormSheet: some View {
+        // Initialize local AI service if Foundation Models available
+        let aiService: GeminiServiceProtocol? = {
+            #if canImport(FoundationModels)
+            return LocalAIService()
+            #else
+            return nil
+            #endif
+        }()
+
         let formViewModel = MomentFormViewModel(
             apiService: NotionAPIService(),
-            modelContext: modelContext
+            modelContext: modelContext,
+            geminiService: aiService
         )
 
         // Pre-fill form data if available from shortcut/deep link
@@ -236,9 +246,19 @@ struct MomentListView: View {
     }
 
     private func editMomentFormSheet(moment: Moment) -> some View {
+        // Initialize local AI service if Foundation Models available
+        let aiService: GeminiServiceProtocol? = {
+            #if canImport(FoundationModels)
+            return LocalAIService()
+            #else
+            return nil
+            #endif
+        }()
+
         let formViewModel = MomentFormViewModel(
             apiService: NotionAPIService(),
-            modelContext: modelContext
+            modelContext: modelContext,
+            geminiService: aiService
         )
         formViewModel.setupForEditing(moment: moment)
 

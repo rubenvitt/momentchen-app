@@ -49,23 +49,23 @@ struct MomentFormView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: mainSpacing) {
-                // Hero TextField
-                heroTextField
+            ScrollView {
+                VStack(spacing: mainSpacing) {
+                    // Hero TextField
+                    heroTextField
 
-                // Type Segmented Control
-                typeSegmentedControl
+                    // Type Segmented Control
+                    typeSegmentedControl
 
-                // Time Row
-                timeRow
+                    // Time Row
+                    timeRow
 
-                // Category Section (always visible)
-                categorySection
-
-                Spacer()
+                    // Category Section (always visible)
+                    categorySection
+                }
+                .padding(.horizontal, horizontalPadding)
+                .padding(.vertical, 24)
             }
-            .padding(.horizontal, horizontalPadding)
-            .padding(.vertical, 24)
             #if os(iOS)
             .background(Color(uiColor: .systemBackground))
             #else
@@ -132,29 +132,85 @@ struct MomentFormView: View {
             )
             .focused($titleFieldFocused)
             .accessibilityLabel("Moment Beschreibung")
+            .onChange(of: viewModel.title) { oldValue, newValue in
+                // Trigger AI inference when title changes (with automatic debouncing)
+                viewModel.inferTypeFromTitle()
+            }
     }
 
-    // MARK: - Type Segmented Control
+    // MARK: - Type Selection
 
     private var typeSegmentedControl: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Typ")
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .foregroundColor(.secondary)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Typ")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
 
-            Picker("Typ", selection: $viewModel.selectedType) {
-                ForEach(viewModel.momentTypes, id: \.id) { type in
-                    Text(type.name)
-                        .tag(type as MomentType?)
+                if viewModel.isInferringType {
+                    ProgressView()
+                        .controlSize(.small)
+                        .padding(.leading, 4)
+                }
+
+                if viewModel.isAiSuggested {
+                    HStack(spacing: 4) {
+                        Image(systemName: "sparkles")
+                            .font(.caption2)
+                        Text("KI-Vorschlag")
+                            .font(.caption2)
+                    }
+                    .foregroundColor(.purple)
+                    .padding(.leading, 4)
                 }
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .onChange(of: viewModel.selectedType) { _, _ in
-                HapticManager.buttonTap()
+
+            FlowLayout(spacing: 8) {
+                ForEach(viewModel.momentTypes, id: \.id) { type in
+                    typeChip(for: type)
+                }
             }
         }
+    }
+
+    private func typeChip(for type: MomentType) -> some View {
+        let isSelected = viewModel.selectedType?.id == type.id
+
+        return Button(action: {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                viewModel.selectType(type)
+            }
+            HapticManager.buttonTap()
+        }) {
+            HStack(spacing: 6) {
+                // Color indicator circle
+                Circle()
+                    .fill(ColorMapper.gradientForType(type))
+                    .frame(width: 12, height: 12)
+
+                Text(type.name)
+                    .font(.subheadline)
+                    .fontWeight(isSelected ? .semibold : .medium)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(isSelected ? ColorMapper.colorForType(type).opacity(0.15) : Color.gray.opacity(0.08))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(
+                        isSelected ? ColorMapper.colorForType(type).opacity(0.5) : Color.clear,
+                        lineWidth: 2
+                    )
+            )
+            .foregroundColor(isSelected ? ColorMapper.colorForType(type) : .secondary)
+        }
+        .buttonStyle(.plain)
+        .scaleEffect(isSelected ? 1.0 : 0.97)
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
     }
 
     // MARK: - Time Row
@@ -233,15 +289,27 @@ struct MomentFormView: View {
 
     private var categorySection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Zuordnung")
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .foregroundColor(.secondary)
+            HStack {
+                Text("Zuordnung")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+
+                if viewModel.isInferringCategory {
+                    ProgressView()
+                        .controlSize(.small)
+                        .padding(.leading, 4)
+                }
+            }
 
             CategoryPicker(
                 selectedCategory: $viewModel.selectedCategory,
                 projects: viewModel.projects,
-                lifeAreas: viewModel.lifeAreas
+                lifeAreas: viewModel.lifeAreas,
+                isAiSuggested: viewModel.isCategoryAiSuggested,
+                onCategorySelected: { category in
+                    viewModel.selectCategory(category)
+                }
             )
         }
     }

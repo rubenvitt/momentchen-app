@@ -29,6 +29,12 @@ final class AppConfiguration {
     /// Database ID for Life Areas
     var lifeAreasDatabaseId: String
 
+    /// Google AI API Key for Gemini integration (optional)
+    var googleAiApiKey: String?
+
+    /// Enable AI suggestions for categories (projects/life areas)
+    var aiCategorySuggestionsEnabled: Bool = false
+
     /// Theme preference (stored as raw string value)
     var themePreference: String
 
@@ -47,6 +53,8 @@ final class AppConfiguration {
     ///   - momentsDatabaseId: Database ID for moments
     ///   - projectsDatabaseId: Database ID for projects
     ///   - lifeAreasDatabaseId: Database ID for life areas
+    ///   - googleAiApiKey: Google AI API Key for Gemini (optional)
+    ///   - aiCategorySuggestionsEnabled: Enable AI category suggestions (default: false)
     ///   - themePreference: Theme preference (light/dark/system)
     ///   - createdAt: Creation timestamp
     ///   - updatedAt: Last update timestamp
@@ -56,6 +64,8 @@ final class AppConfiguration {
         momentsDatabaseId: String,
         projectsDatabaseId: String,
         lifeAreasDatabaseId: String,
+        googleAiApiKey: String? = nil,
+        aiCategorySuggestionsEnabled: Bool = false,
         themePreference: ThemePreference = .system,
         createdAt: Date = Date(),
         updatedAt: Date = Date()
@@ -65,6 +75,8 @@ final class AppConfiguration {
         self.momentsDatabaseId = momentsDatabaseId
         self.projectsDatabaseId = projectsDatabaseId
         self.lifeAreasDatabaseId = lifeAreasDatabaseId
+        self.googleAiApiKey = googleAiApiKey
+        self.aiCategorySuggestionsEnabled = aiCategorySuggestionsEnabled
         self.themePreference = themePreference.rawValue
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -152,6 +164,8 @@ extension AppConfiguration {
         momentsDatabaseId: String = "moments-db-id",
         projectsDatabaseId: String = "projects-db-id",
         lifeAreasDatabaseId: String = "lifeareas-db-id",
+        googleAiApiKey: String? = nil,
+        aiCategorySuggestionsEnabled: Bool = false,
         theme: ThemePreference = .system
     ) -> AppConfiguration {
         AppConfiguration(
@@ -160,6 +174,8 @@ extension AppConfiguration {
             momentsDatabaseId: momentsDatabaseId,
             projectsDatabaseId: projectsDatabaseId,
             lifeAreasDatabaseId: lifeAreasDatabaseId,
+            googleAiApiKey: googleAiApiKey,
+            aiCategorySuggestionsEnabled: aiCategorySuggestionsEnabled,
             themePreference: theme
         )
     }

@@ -13,41 +13,66 @@ struct CategoryPicker: View {
     @Binding var selectedCategory: MomentCategory
     let projects: [Project]
     let lifeAreas: [LifeArea]
+    var isAiSuggested: Bool = false
+    var onCategorySelected: ((MomentCategory) -> Void)?
 
     var body: some View {
-        Picker("Kategorie", selection: $selectedCategory) {
-            // None option
-            Text("Keine Zuordnung")
-                .tag(MomentCategory.none)
+        HStack(spacing: 8) {
+            Picker("Kategorie", selection: $selectedCategory) {
+                // None option
+                Text("Keine Zuordnung")
+                    .tag(MomentCategory.none)
 
-            // Projects section
-            if !projects.isEmpty {
-                Section(header: Text("Projekte")) {
-                    ForEach(projects) { project in
-                        HStack {
-                            Image(systemName: "folder.fill")
-                            Text(project.title)
+                // Projects section
+                if !projects.isEmpty {
+                    Section(header: Text("Projekte")) {
+                        ForEach(projects) { project in
+                            HStack {
+                                Image(systemName: "folder.fill")
+                                Text(project.title)
+                            }
+                            .tag(MomentCategory.project(project))
                         }
-                        .tag(MomentCategory.project(project))
+                    }
+                }
+
+                // Life Areas section
+                if !lifeAreas.isEmpty {
+                    Section(header: Text("Lebensbereiche")) {
+                        ForEach(lifeAreas) { lifeArea in
+                            HStack {
+                                Image(systemName: "star.fill")
+                                Text(lifeArea.title)
+                            }
+                            .tag(MomentCategory.lifeArea(lifeArea))
+                        }
                     }
                 }
             }
+            .pickerStyle(.menu)
+            .font(.body)
+            .onChange(of: selectedCategory) { _, newValue in
+                onCategorySelected?(newValue)
+            }
 
-            // Life Areas section
-            if !lifeAreas.isEmpty {
-                Section(header: Text("Lebensbereiche")) {
-                    ForEach(lifeAreas) { lifeArea in
-                        HStack {
-                            Image(systemName: "star.fill")
-                            Text(lifeArea.title)
-                        }
-                        .tag(MomentCategory.lifeArea(lifeArea))
-                    }
+            // AI Suggestion Badge
+            if isAiSuggested && selectedCategory != .none {
+                HStack(spacing: 4) {
+                    Image(systemName: "sparkles")
+                        .font(.caption2)
+                    Text("KI")
+                        .font(.caption2)
+                        .fontWeight(.medium)
                 }
+                .foregroundColor(.white)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(
+                    Capsule()
+                        .fill(Color.purple)
+                )
             }
         }
-        .pickerStyle(.menu)
-        .font(.body)
     }
 }
 
