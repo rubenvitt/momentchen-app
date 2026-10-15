@@ -150,7 +150,7 @@ final class LocalAIService: AIServiceProtocol {
 
         // Add "none" option
         categoryOptions.append("Keine Zuordnung")
-        categoryMap["keine zuordnung"] = .none
+        categoryMap["keine zuordnung"] = MomentCategory.none
 
         guard !categoryOptions.isEmpty else {
             return nil
